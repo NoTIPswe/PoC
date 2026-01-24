@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/devcontainers/base:ubuntu-22.04
 
-ARG GO_VERSION=1.22.5
+ARG GO_VERSION=1.25.6
 ARG TARGETARCH
 ARG WORKSPACE_DIR=/workspaces/PoC
 

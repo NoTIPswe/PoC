@@ -10,11 +10,11 @@ import (
 )
 
 type Device struct {
-	ID         string
-	Type       DeviceType
-	GatewayID  string
-	TenantID   string
-	sensor     *SensorState
+	ID        string
+	Type      DeviceType
+	GatewayID string
+	TenantID  string
+	sensor    *SensorState
 }
 
 func NewDevice(deviceType DeviceType, index int, gatewayID, tenantID string) *Device {
@@ -34,13 +34,13 @@ func NewDevice(deviceType DeviceType, index int, gatewayID, tenantID string) *De
 
 func (d *Device) GenerateTelemetry() telemetry.Payload {
 	return telemetry.Payload{
-		MessageID:    uuid.New().String(),
-		GatewayID:    d.GatewayID,
-		DeviceID:     d.ID,
-		TenantID:     d.TenantID,
-		DeviceType:   string(d.Type),
-		Timestamp:    time.Now().UTC(),
-		Measurements: d.sensor.GenerateReadings(),
+		MessageID:  uuid.New().String(),
+		GatewayID:  d.GatewayID,
+		DeviceID:   d.ID,
+		TenantID:   d.TenantID,
+		DeviceType: string(d.Type),
+		Timestamp:  time.Now().UTC(),
+		Data:       d.sensor.GenerateReadings(),
 	}
 }
 

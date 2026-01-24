@@ -4,13 +4,13 @@ import "time"
 
 // Real payload
 type Payload struct {
-	MessageID   string                 `json:"message_id"`
-	GatewayID   string                 `json:"gateway_id"`
-	DeviceID    string                 `json:"device_id"`
-	TenantID    string                 `json:"tenant_id"`
-	DeviceType  string                 `json:"device_type"`
-	Timestamp   time.Time              `json:"timestamp"`
-	Measurements map[string]interface{} `json:"measurement"`
+	MessageID  string                 `json:"message_id"`
+	GatewayID  string                 `json:"gateway_id"`
+	DeviceID   string                 `json:"device_id"`
+	TenantID   string                 `json:"tenant_id"`
+	DeviceType string                 `json:"device_type"`
+	Timestamp  time.Time              `json:"timestamp"`
+	Data       map[string]interface{} `json:"measurement"`
 }
 
 type EncryptedEnvelope struct {
