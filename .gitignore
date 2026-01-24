@@ -1,0 +1,54 @@
+# --- Dependencies ---
+node_modules
+.pnpm-store
+
+# --- Build Outputs (Angular / NestJS) ---
+dist/
+out/
+build/
+bin/
+
+# --- Logs ---
+logs
+*.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- Environment Variables (IMPORTANT!) ---
+.env
+.env.local
+.env.*.local
+*.env
+
+# --- macOS ---
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# --- IDEs / Editor ---
+.idea/
+.vscode/
+
+# --- Angular Specific ---
+.angular/
+
+# --- Golang ---
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+# Test binaries
+*.test
+# Service binaries 
+services/*/gateway-simulator
+services/*/ingestion-service
+services/*/data-consumer
+
+# --- Temporary Files ---
+*.tmp
+*.temp
+.cache/
+tmp/

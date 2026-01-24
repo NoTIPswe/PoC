@@ -1,1 +1,1 @@
-# PoC
+# Proof of Concept - Progetto SWE UNIPD
