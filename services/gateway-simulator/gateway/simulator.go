@@ -37,7 +37,12 @@ func (s *Simulator) Start(ctx context.Context) error {
 		tenantID := s.config.TenantIDs[i%len(s.config.TenantIDs)]
 		clientID := fmt.Sprintf("%s-%s", s.config.MQTTClientPrefix, gatewayID)
 
-		mqttClient, err := mqtt.NewClient(s.config.MQTTBroker, clientID, s.config.MQTTQoS)
+		tlsCfg := &mqtt.TLSConfig{
+			CACert:     s.config.TLSCACert,
+			ClientCert: s.config.TLSClientCert,
+			ClientKey:  s.config.TLSClientKey,
+		}
+		mqttClient, err := mqtt.NewClient(s.config.MQTTBroker, clientID, s.config.MQTTQoS, tlsCfg)
 		if err != nil {
 			return fmt.Errorf("create MQTT client for %s: %w", gatewayID, err)
 		}

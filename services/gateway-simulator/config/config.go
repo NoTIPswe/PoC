@@ -7,9 +7,13 @@ import (
 )
 
 type Config struct {
-	MQTTBroker       string `envconfig:"MQTT_BROKER" default:"tcp://localhost:1883"`
+	MQTTBroker       string `envconfig:"MQTT_BROKER" default:"ssl://localhost:8883"`
 	MQTTClientPrefix string `envconfig:"MQTT_CLIENT_PREFIX" default:"gateway-sim"`
 	MQTTQoS          byte   `envconfig:"MQTT_QOS" default:"1"`
+
+	TLSCACert     string `envconfig:"TLS_CA_CERT" default:"certs/ca.crt"`
+	TLSClientCert string `envconfig:"TLS_CLIENT_CERT" default:"certs/client.crt"`
+	TLSClientKey  string `envconfig:"TLS_CLIENT_KEY" default:"certs/client.key"`
 
 	NumGateways       int           `envconfig:"NUM_GATEWAYS" default:"2"`
 	DevicesPerGateway int           `envconfig:"DEVICES_PER_GATEWAY" default:"5"`

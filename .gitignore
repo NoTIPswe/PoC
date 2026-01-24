@@ -52,3 +52,6 @@ services/*/data-consumer
 *.temp
 .cache/
 tmp/
+
+# --- Certs ---
+certs/

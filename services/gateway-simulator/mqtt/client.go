@@ -1,19 +1,28 @@
 package mqtt
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	paho "github.com/eclipse/paho.mqtt.golang"
 )
+
+type TLSConfig struct {
+	CACert     string
+	ClientCert string
+	ClientKey  string
+}
 
 type Client struct {
 	client paho.Client
 	qos    byte
 }
 
-func NewClient(broker, clientID string, qos byte) (*Client, error) {
+func NewClient(broker, clientID string, qos byte, tlsCfg *TLSConfig) (*Client, error) {
 	opts := paho.NewClientOptions().
 		AddBroker(broker).
 		SetClientID(clientID).
@@ -27,6 +36,14 @@ func NewClient(broker, clientID string, qos byte) (*Client, error) {
 			log.Printf("[MQTT] Connected: %s", clientID)
 		})
 
+	if tlsCfg != nil {
+		tlsConfig, err := loadTLSConfig(tlsCfg)
+		if err != nil {
+			return nil, fmt.Errorf("load TLS config: %w", err)
+		}
+		opts.SetTLSConfig(tlsConfig)
+	}
+
 	client := paho.NewClient(opts)
 
 	token := client.Connect()
@@ -38,6 +55,29 @@ func NewClient(broker, clientID string, qos byte) (*Client, error) {
 	}
 
 	return &Client{client: client, qos: qos}, nil
+}
+
+func loadTLSConfig(cfg *TLSConfig) (*tls.Config, error) {
+	caCert, err := os.ReadFile(cfg.CACert)
+	if err != nil {
+		return nil, fmt.Errorf("read CA cert: %w", err)
+	}
+
+	caCertPool := x509.NewCertPool()
+	if !caCertPool.AppendCertsFromPEM(caCert) {
+		return nil, fmt.Errorf("failed to parse CA cert")
+	}
+
+	clientCert, err := tls.LoadX509KeyPair(cfg.ClientCert, cfg.ClientKey)
+	if err != nil {
+		return nil, fmt.Errorf("load client cert: %w", err)
+	}
+
+	return &tls.Config{
+		RootCAs:      caCertPool,
+		Certificates: []tls.Certificate{clientCert},
+		MinVersion:   tls.VersionTLS12,
+	}, nil
 }
 
 func (c *Client) Publish(topic string, payload []byte) error {
