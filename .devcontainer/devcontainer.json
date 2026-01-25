@@ -24,13 +24,12 @@
   
   "workspaceFolder": "/workspaces/PoC",
   
-  "forwardPorts": [ 3000, 4200, 5432, 4222, 1883 ],
+  "forwardPorts": [ 3000, 4200, 5432, 4222 ],
   "portsAttributes": {
     "3000": { "label": "Data API (NestJS)" },
     "4200": { "label": "Web application (Angular)" },
     "5432": { "label": "PostgreSQL/TimescaleDB" },
-    "4222": { "label": "NATS" },
-    "1883": { "label": "MQTT (NATS)" }
+    "4222": { "label": "NATS" }
   },
   "postCreateCommand": "pnpm install || true", 
   "remoteUser": "vscode"

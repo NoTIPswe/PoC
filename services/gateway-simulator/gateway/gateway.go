@@ -10,24 +10,24 @@ import (
 
 	"gateway-simulator/crypto"
 	"gateway-simulator/device"
-	"gateway-simulator/mqtt"
 	"gateway-simulator/telemetry"
+	"gateway-simulator/transport"
 )
 
 type Gateway struct {
 	ID        string
 	TenantID  string
 	devices   []*device.Device
-	mqtt      *mqtt.Client
+	transport *transport.Client
 	encryptor *crypto.Encryptor
 }
 
-func NewGateway(id, tenantID string, numDevices int, mqttClient *mqtt.Client, encryptor *crypto.Encryptor) *Gateway {
+func NewGateway(id, tenantID string, numDevices int, client *transport.Client, encryptor *crypto.Encryptor) *Gateway {
 	gw := &Gateway{
 		ID:        id,
 		TenantID:  tenantID,
 		devices:   make([]*device.Device, 0, numDevices),
-		mqtt:      mqttClient,
+		transport: client,
 		encryptor: encryptor,
 	}
 
@@ -69,9 +69,9 @@ func (g *Gateway) publishTelemetry() {
 			continue
 		}
 
-		topic := fmt.Sprintf("telemetry/%s/%s/%s", g.TenantID, g.ID, payload.DeviceType)
+		subject := fmt.Sprintf("telemetry.%s.%s.%s", g.TenantID, g.ID, payload.DeviceType)
 
-		if err := g.mqtt.Publish(topic, encrypted); err != nil {
+		if err := g.transport.Publish(subject, encrypted); err != nil {
 			log.Printf("[Gateway %s] Publish error: %v", g.ID, err)
 			continue
 		}

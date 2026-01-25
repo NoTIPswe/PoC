@@ -31,7 +31,6 @@ services:
         condition: service_completed_successfully
     ports:
       - "4222:4222"
-      - "8883:1883"
       - "8222:8222"
     volumes:
       - nats_data:/data
@@ -55,7 +54,7 @@ services:
     volumes:
       - ./certs:/app/certs:ro
     environment:
-      - MQTT_BROKER=ssl://nats:1883 
+      - NATS_URL=tls://nats:4222 
       - TLS_CA_CERT=/app/certs/ca.crt
       - TLS_CLIENT_CERT=/app/certs/client.crt
       - TLS_CLIENT_KEY=/app/certs/client.key
@@ -79,6 +78,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-measures}
     volumes:
       - timescaledb_data:/var/lib/postgresql/data
+      - ./measure-db.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro 
     command: 
       - "postgres"
       - "-c"
