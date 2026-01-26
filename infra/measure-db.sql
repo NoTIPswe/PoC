@@ -1,14 +1,26 @@
 CREATE EXTENSION IF NOT EXISTS timescaledb;
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- ============================================
 -- CONFIGURAZIONE
 -- ============================================
 
 CREATE TABLE IF NOT EXISTS tenants (
-    id               TEXT PRIMARY KEY,
-    name             TEXT NOT NULL,
-    created_at       TIMESTAMPTZ DEFAULT NOW(),
-    active           BOOLEAN DEFAULT TRUE
+    id               UUID PRIMARY KEY DEFAULT uuidv4(),
+    name             TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS gateway (
+    id              UUID PRIMARY KEY DEFAULT uuidv4(),
+);
+
+CREATE TABLE IF NOT EXISTS tenants_gateways (
+    id_tenant       TEXT NOT NULL,
+    id_gateway      TEXT NOT NULL,
+
+    FOREIGN KEY (id_tenant) REFERENCES tenants(id),
+    FOREIGN KEY (id_gateway) REFERENCES gateway(id),
+    PRIMARY KEY (id_tenant, id_gateway)
 );
 
 -- ============================================
@@ -17,8 +29,8 @@ CREATE TABLE IF NOT EXISTS tenants (
 
 CREATE TABLE IF NOT EXISTS telemetry_envelopes (
     time             TIMESTAMPTZ NOT NULL,
-    tenant_id        TEXT NOT NULL,
-    gateway_id       TEXT NOT NULL,
+    tenant_id        UUID NOT NULL DEFAULT uuidv4(),
+    gateway_id       UUID NOT NULL DEFAULT uuidv4(),
     version          INTEGER NOT NULL DEFAULT 1,
     key_id           TEXT NOT NULL,
     nonce            TEXT NOT NULL,
