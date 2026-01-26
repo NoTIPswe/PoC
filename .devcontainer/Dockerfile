@@ -26,6 +26,9 @@ RUN corepack enable
 ENV PNPM_HOME="/home/vscode/.local/share/pnpm"
 ENV PATH="${PNPM_HOME}:${PATH}"
 
+# Install angular 
+RUN pnpm install -g @angular/cli
+
 # Set the working directory
 RUN mkdir -p ${WORKSPACE_DIR} && chown vscode:vscode ${WORKSPACE_DIR}
 WORKDIR ${WORKSPACE_DIR}
