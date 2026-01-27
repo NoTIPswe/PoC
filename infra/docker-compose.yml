@@ -64,6 +64,23 @@ services:
       - LOG_LEVEL=info
 
 
+  data-api: 
+    build: ../services/data-api
+    container_name: poc-data-api 
+    depends_on: 
+      timescaledb: 
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DB_HOST=timescaledb
+      - DB_PORT=5432
+      - DB_USERNAME=${POSTGRES_USER:-poc}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-poc_password}
+      - DB_DATABASE=${POSTGRES_DB:-measures}
+
   timescaledb: 
     image: timescale/timescaledb:latest-pg18
     container_name: poc-timescaledb

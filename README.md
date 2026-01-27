@@ -38,8 +38,9 @@ TimescaleDB offre le performance di un TSDB verticale mantenendo l'affidabilità
 * **Linguaggio:** TypeScript - NestJS.
 * **Ruolo:** 
 Espone endpoint **Read-Only** per la dashboard. Interroga il database applicando filtri rigorosi per l'isolamento dei tenant (es. `WHERE tenant_id = X`), basandosi su un'autenticazione mockata.
+Utilizzo di TypeORM per una gestione migliore delle Hypertables di TimescaleDB.
 * **Perché:** 
-NestJS offre una struttura modulare e manutenibile per la logica di business e di accesso ai dati.
+NestJS offre una struttura modulare e manutenibile per la logica di business e di accesso ai dati. L'integrazione con TypeORM garantisce un perfetto equilibrio tra l'astrazione di un ORM e la necessità di eseguire query SQL ottimizzate per serie temporali.
 
 ### 6. Web Dashboard & Client SDK
 * **Tecnologia:** Angular + TypeScript SDK.
