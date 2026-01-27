@@ -11,12 +11,12 @@ CREATE TABLE IF NOT EXISTS tenants (
 );
 
 CREATE TABLE IF NOT EXISTS gateway (
-    id              UUID PRIMARY KEY DEFAULT uuidv4(),
+    id              UUID PRIMARY KEY DEFAULT uuidv4()
 );
 
 CREATE TABLE IF NOT EXISTS tenants_gateways (
-    id_tenant       TEXT NOT NULL,
-    id_gateway      TEXT NOT NULL,
+    id_tenant       UUID NOT NULL,
+    id_gateway      UUID NOT NULL,
 
     FOREIGN KEY (id_tenant) REFERENCES tenants(id),
     FOREIGN KEY (id_gateway) REFERENCES gateway(id),

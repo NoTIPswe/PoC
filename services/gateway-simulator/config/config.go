@@ -17,7 +17,7 @@ type Config struct {
 	DevicesPerGateway int           `envconfig:"DEVICES_PER_GATEWAY" default:"5"`
 	TelemetryInterval time.Duration `envconfig:"TELEMETRY_INTERVAL" default:"5s"`
 
-	TenantIDs []string `envconfig:"TENANT_IDS" default:"tenant-001,tenant-002"`
+	TenantIDs []string `envconfig:"TENANT_IDS" default:"605e76a6-9812-4632-8418-43d99d9403d1,a66b9370-13f8-43e3-b097-f58c704f0f62"`
 
 	EncryptionKey string `envconfig:"ENCRYPTION_KEY" default:"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"`
 
