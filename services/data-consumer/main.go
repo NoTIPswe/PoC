@@ -18,16 +18,20 @@ import (
 func main() {
 	ctx := context.Background()
 
-	tlsCfg := config.LoadTLSConfig()
-	nc := messaging.InitNATS(os.Getenv("NATS_URL"), nats.Secure(tlsCfg))
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+	tlsCfg := config.LoadTLSConfig(cfg)
+	nc := messaging.InitNATS(cfg.NATSURL, nats.Secure(tlsCfg))
 	log.Println("✅ Connesso a NATS")
 	defer nc.Close()
 
-	dbPool := storage.InitDatabase(ctx, os.Getenv("DB_URL"))
+	dbPool := storage.InitDatabase(ctx, cfg.DBURL)
 	log.Println("✅ Connesso a TimescaleDB")
 	defer dbPool.Close()
 
-	_, err := nc.Subscribe("telemetry.>", func(m *nats.Msg) {
+	_, err = nc.Subscribe("telemetry.>", func(m *nats.Msg) {
 		var t storage.Telemetry
 		if err := json.Unmarshal(m.Data, &t); err != nil {
 			log.Printf("JSON Error: %v", err)
@@ -42,6 +46,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	log.Println("Data Consumer avviato correttamente")
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)

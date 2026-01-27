@@ -1,27 +1,24 @@
 package config
 
 import (
-	"crypto/tls"
-	"crypto/x509"
-	"log"
-	"os"
+	"github.com/kelseyhightower/envconfig"
 )
 
-func LoadTLSConfig() *tls.Config {
-	cert, err := tls.LoadX509KeyPair(os.Getenv("TLS_CLIENT_CERT"), os.Getenv("TLS_CLIENT_KEY"))
-	if err != nil {
-		log.Fatalf("Errore certificati client: %v", err)
-	}
+type Config struct {
+	NATSURL string `envconfig:"NATS_URL" default:"tls://nats:4222"`
+	DBURL   string `enconfig:"DB_URL" default:"postgres://poc:poc_password@timescaledb:5432/measures"`
 
-	caPool := x509.NewCertPool()
-	caData, err := os.ReadFile(os.Getenv("TLS_CA_CERT"))
-	if err != nil {
-		log.Fatalf("Errore lettura CA: %v", err)
-	}
-	caPool.AppendCertsFromPEM(caData)
+	TLSCACert     string `envconfig:"TLS_CA_CERT" default:"certs/ca.crt"`
+	TLSClientCert string `envconfig:"TLS_CLIENT_CERT" default:"certs/client.crt"`
+	TLSClientKey  string `envconfig:"TLS_CLIENT_KEY" default:"certs/client.key"`
 
-	return &tls.Config{
-		RootCAs:      caPool,
-		Certificates: []tls.Certificate{cert},
+	LogLevel string `envconfig:"LOG_LEVEL" default:"info"`
+}
+
+func Load() (*Config, error) {
+	var cfg Config
+	if err := envconfig.Process("", &cfg); err != nil {
+		return nil, err
 	}
+	return &cfg, nil
 }
