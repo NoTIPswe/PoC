@@ -95,6 +95,25 @@ services:
       timeout: 5s
       retries: 5  
 
+
+  data-consumer:
+    build: ../services/data-consumer
+    container_name: poc-data-consumer
+    depends_on:
+      cert-gen:
+        condition: service_completed_successfully
+      nats:
+        condition: service_healthy
+    volumes:
+      - ./certs:/app/certs:ro
+    environment:
+      - NATS_URL=tls://nats:4222 
+      - TLS_CA_CERT=/app/certs/ca.crt
+      - TLS_CLIENT_CERT=/app/certs/client.crt
+      - TLS_CLIENT_KEY=/app/certs/client.key
+      - DB_URL=postgres://poc:poc_password@timescaledb:5432/measures
+      - LOG_LEVEL=info
+
 volumes: 
   timescaledb_data:
   nats_data:

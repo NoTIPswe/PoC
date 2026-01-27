@@ -10,6 +10,8 @@ import (
 	"gateway-simulator/config"
 	"gateway-simulator/crypto"
 	"gateway-simulator/transport"
+
+	"github.com/google/uuid"
 )
 
 type Simulator struct {
@@ -33,7 +35,7 @@ func (s *Simulator) Start(ctx context.Context) error {
 	log.Printf("[Simulator] Starting %d gateways, %d devices each", s.config.NumGateways, s.config.DevicesPerGateway)
 
 	for i := 0; i < s.config.NumGateways; i++ {
-		gatewayID := fmt.Sprintf("gw-%03d", i+1)
+		gatewayID := uuid.NewString()
 		tenantID := s.config.TenantIDs[i%len(s.config.TenantIDs)]
 
 		tlsCfg := &transport.TLSConfig{
