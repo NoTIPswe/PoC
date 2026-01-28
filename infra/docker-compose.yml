@@ -63,9 +63,10 @@ services:
       - TELEMETRY_INTERVAL=5s
       - LOG_LEVEL=info
 
-
-  data-api: 
-    build: ../services/data-api
+  data-api:
+    build:
+      context: ..
+      dockerfile: services/data-api/Dockerfile
     container_name: poc-data-api 
     depends_on: 
       timescaledb: 

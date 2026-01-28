@@ -1,36 +1,30 @@
-# Stage 1
+# Stage 1 - Base
 FROM node:22-alpine AS base
-
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable 
+RUN corepack enable
 WORKDIR /app
 
-# Stage 2 - dependencies
-FROM base AS deps 
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+# Stage 2 - Build
+FROM base AS builder
 
-# Stage 3 - buildva
-FROM base AS builder 
-COPY --from=deps /app/node_modules ./node_modules
-COPY . . 
-RUN pnpm run build 
-RUN pnpm prune --prod
+COPY pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY services/data-api ./services/data-api
 
-# Stage 4 - final image
+RUN pnpm install --frozen-lockfile --filter data-api
+RUN pnpm --filter data-api run build
+RUN pnpm deploy --filter data-api --prod --legacy /app/deploy
+
+# Stage 3 - Runtime
 FROM node:22-alpine
-WORKDIR /app 
-ENV NODE_ENV=production 
+WORKDIR /app
+ENV NODE_ENV=production
 
 RUN addgroup -S nodejs && adduser -S nestjs -G nodejs
 
-# Copy only necessary things 
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/deploy ./
+COPY --from=builder /app/services/data-api/dist ./dist
 
 USER nestjs
-
 EXPOSE 3000
 CMD [ "node", "dist/main.js" ]
