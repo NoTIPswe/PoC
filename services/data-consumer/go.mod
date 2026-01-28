@@ -4,6 +4,7 @@ go 1.25.6
 
 require (
 	github.com/jackc/pgx/v5 v5.8.0
+	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/nats-io/nats.go v1.48.0
 )
 
