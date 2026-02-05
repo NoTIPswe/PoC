@@ -12,7 +12,7 @@ export class CryptoService {
 
   private async initKey(): Promise<void> {
     const keyBytes = this.hexToBytes(this.HEX_KEY);
-    this. cryptoKey = await window.crypto.subtle.importKey(
+    this.cryptoKey = await window.crypto.subtle.importKey(
       'raw',
       keyBytes as any,
       { name: 'AES-GCM' },

@@ -23,5 +23,6 @@ func LoadTLSConfig(cfg *Config) *tls.Config {
 	return &tls.Config{
 		RootCAs:      caPool,
 		Certificates: []tls.Certificate{cert},
+		MinVersion:   tls.VersionTLS12,
 	}
 }
