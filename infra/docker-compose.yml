@@ -133,9 +133,7 @@ services:
       - LOG_LEVEL=info
 
   web-app:
-    build:
-      context: ./web-app
-      dockerfile: Dockerfile
+    build: ../services/web-app
     container_name: poc-web-app
     ports:
       - "4200:80"

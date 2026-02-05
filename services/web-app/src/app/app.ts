@@ -8,6 +8,6 @@ import { DashboardComponent } from './dashboard/dashboard';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class AppComponent {
+export class App {
   title = 'web-app';
 }
