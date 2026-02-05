@@ -70,29 +70,111 @@ Per motivi di tempo e focalizzazione, il PoC esclude le parti non critiche per l
 
 ---
 
-## Guida all'Esecuzione
+# Guida di Esecuzione - PoC End-to-End Encryption IoT
 
-### Prerequisiti
+## Prerequisiti
 
-Assicurarsi di aver installato sulla macchina **Docker Desktop**.
+- **Docker Desktop** installato e avviato sulla macchina
+  - [Download Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- Porte libere: `4200` (Dashboard), `3000` (API), `5432` (Database), `4222` (NATS)
 
-### Esecuzione
+## Esecuzione
 
-1. **Apri il terminale** nella cartella `infra`  
-   `cd /path/to/PoC/infra`
+### 1. Posizionati nella cartella infra
 
-2. **Avvia l'ambiente:**  
-   `docker compose up --build`  
-   _Attendere che tutti i servizi siano started_  
-   Se si vuole che il terminale sia lasciato libero e si vuole che tutta la struttura runni in background utilizzare:  
-    `docker compose up --build -d`
+```bash
+cd /path/to/PoC/infra
+```
 
-3. **Accedi alla Dashboard**  
-   Apri il browser su: http://localhost:4200
+### 2. Avvia l'ambiente
 
-### Credenziali e Accesso
+**Modalità interattiva** (con log visibili):
 
-Per fare il login nella Dashboard, usa uno dei **Tenant ID** configurati nel simulatore.
+```bash
+docker compose up --build
+```
 
-- **Tenant 1:** `605e76a6-9812-4632-8418-43d99d9403d1`
-- **Tenant 2:** `a66b9370-13f8-43e3-b097-f58c704f0f62`
+**Modalità background** (terminale libero):
+
+```bash
+docker compose up --build -d
+```
+
+> ⏱️ **Nota**: Il primo avvio può richiedere 2-3 minuti per scaricare le immagini e buildare i container.
+
+### 3. Verifica che i servizi siano avviati
+
+Controlla lo stato dei container:
+
+```bash
+docker compose ps
+```
+
+Dovresti vedere tutti i servizi con stato `Up` o `running`.
+
+### 4. Accedi alla Dashboard
+
+Apri il browser e vai su: **http://localhost:4200**
+
+## Credenziali di Accesso
+
+Per fare il login nella Dashboard, usa uno dei seguenti **Tenant ID**:
+
+- **Tenant 1**: `605e76a6-9812-4632-8418-43d99d9403d1`
+- **Tenant 2**: `a66b9370-13f8-43e3-b097-f58c704f0f62`
+
+Incolla uno di questi ID nel campo di login e clicca "Access Dashboard".
+
+## Cosa Aspettarsi
+
+Dopo il login, dovresti vedere:
+
+- Una tabella con dati di telemetria cifrati e decifrati lato client
+- Dati in arrivo ogni 5 secondi da diversi dispositivi IoT simulati
+- Tipi di sensori: temperature, humidity, power meter, air quality, motion sensor
+
+## Troubleshooting
+
+### La dashboard non carica dati
+
+1. Verifica che tutti i servizi siano running:
+
+```bash
+   docker compose ps
+```
+
+2. Controlla i log del simulatore:
+
+```bash
+   docker compose logs gateway-simulator
+```
+
+3. Controlla i log del data-consumer:
+
+```bash
+   docker compose logs data-consumer
+```
+
+### Errore "Cannot connect to the Docker daemon"
+
+- Assicurati che Docker Desktop sia avviato
+
+### Porta già in uso
+
+Se una porta è già occupata, puoi modificarla nel file `docker-compose.yml`
+
+## Arresto dell'Ambiente
+
+**Se in modalità interattiva**: Premi `Ctrl+C` nel terminale
+
+**Se in background**:
+
+```bash
+docker compose down
+```
+
+**Per rimuovere anche i dati (reset completo)**:
+
+```bash
+docker compose down -v
+```
