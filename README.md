@@ -70,7 +70,7 @@ Per motivi di tempo e focalizzazione, il PoC esclude le parti non critiche per l
 
 ---
 
-# Guida di Esecuzione - PoC End-to-End Encryption IoT
+# Guida di Esecuzione - PoC
 
 ## Prerequisiti
 
