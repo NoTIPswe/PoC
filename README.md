@@ -70,13 +70,13 @@ Per motivi di tempo e focalizzazione, il PoC esclude le parti non critiche per l
 
 ---
 
-### Guida all'Esecuzione
+## Guida all'Esecuzione
 
-## Prerequisiti
+### Prerequisiti
 
 Assicurarsi di aver installato sulla macchina **Docker Desktop**.
 
-## Esecuzione
+### Esecuzione
 
 1. **Apri il terminale** nella cartella `infra`
    `cd /path/to/PoC/infra`
@@ -91,7 +91,7 @@ Se si vuole che il terminale sia lasciato libero e si vuole che tutta la struttu
 3. **Accedi alla Dashboard**
    Apri il browser su: http://localhost:4200
 
-## Credenziali e Accesso
+### Credenziali e Accesso
 
 Per fare il login nella Dashboard, usa uno dei **Tenant ID** configurati nel simulatore.
 
