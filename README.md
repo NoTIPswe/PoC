@@ -78,17 +78,17 @@ Assicurarsi di aver installato sulla macchina **Docker Desktop**.
 
 ### Esecuzione
 
-1. **Apri il terminale** nella cartella `infra` \\
+1. **Apri il terminale** nella cartella `infra`  
    `cd /path/to/PoC/infra`
 
-2. **Avvia l'ambiente:**\\
-   `docker compose up --build`\\
-   _Attendere che tutti i servizi siano started_\\
+2. **Avvia l'ambiente:**  
+   `docker compose up --build`  
+   _Attendere che tutti i servizi siano started_
 
-Se si vuole che il terminale sia lasciato libero e si vuole che tutta la struttura runni in background utilizzare:\\
+Se si vuole che il terminale sia lasciato libero e si vuole che tutta la struttura runni in background utilizzare:  
 `docker compose up --build -d`
 
-3. **Accedi alla Dashboard**\\
+3. **Accedi alla Dashboard**  
    Apri il browser su: http://localhost:4200
 
 ### Credenziali e Accesso
