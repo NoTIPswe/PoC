@@ -132,6 +132,16 @@ services:
       - DB_URL=postgres://poc:poc_password@timescaledb:5432/measures
       - LOG_LEVEL=info
 
+  web-app:
+    build:
+      context: ./web-app
+      dockerfile: Dockerfile
+    container_name: poc-web-app
+    ports:
+      - "4200:80"
+    depends_on:
+      - data-api
+
 volumes: 
   timescaledb_data:
   nats_data:

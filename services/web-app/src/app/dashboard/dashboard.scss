@@ -1,0 +1,42 @@
+.container { padding: 20px; font-family: 'Segoe UI', sans-serif; }
+
+/* Login Card Style */
+.login-card {
+  max-width: 400px;
+  margin: 80px auto;
+  padding: 40px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+  
+  input {
+    width: 100%; padding: 12px; margin: 20px 0;
+    font-size: 1rem; border: 2px solid #eee; border-radius: 6px;
+    box-sizing: border-box;
+  }
+  
+  button {
+    width: 100%; padding: 12px; background: #007bff; color: white;
+    border: none; border-radius: 6px; font-size: 1rem; cursor: pointer;
+    &:disabled { background: #ccc; }
+  }
+
+  .hint { margin-top: 20px; color: #666; font-size: 0.9em; }
+}
+
+/* Dashboard Style */
+header {
+  border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px;
+  .header-content { display: flex; justify-content: space-between; align-items: center; }
+}
+
+.logout-btn {
+  background: #dc3545; color: white; border: none;
+  padding: 8px 16px; border-radius: 4px; cursor: pointer;
+}
+
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+th { background-color: #f8f9fa; }
+.measurements { font-family: monospace; color: #28a745; font-weight: bold; }
