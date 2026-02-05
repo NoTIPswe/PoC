@@ -8,7 +8,7 @@ Vogliamo dimostrare che lo stack tecnologico scelto è un *good fit* per i requi
 ### 1. Gateway Simulator
 * **Linguaggio:** Go.
 * **Ruolo:** 
-Il simulatore genera traffico sintetico emulando molteplici dispositivi connessi simultaneamente. Si occupa di generare payload di telemetria, cifrarli alla fonte (utilizzando chiavi statiche definite in configurazione) e inviarli tramite protocollo **MQTTS**, autenticandosi tramite **certificati client (mTLS)**.
+Il simulatore genera traffico sintetico emulando molteplici dispositivi connessi simultaneamente. Si occupa di generare payload di telemetria, cifrarli alla fonte (utilizzando chiavi statiche definite in configurazione) e inviarli tramite protocollo proprietario di **NATS**, autenticandosi tramite **certificati client (mTLS)**.
 * **Perché:** 
 Go e le sue goroutines permettono di simulare un alto numero di connessioni concorrenti con un basso footprint di risorse, stressando il sistema come farebbe una flotta reale.
 

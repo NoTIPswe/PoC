@@ -30,7 +30,7 @@ func NewClient(natsURL string, tlsConfig *TLSConfig) (*Client, error) {
 			}
 		}),
 		nats.ReconnectHandler(func(c *nats.Conn) {
-			log.Printf("[NATS] Recconected to %s", c.ConnectedUrl())
+			log.Printf("[NATS] Reconected to %s", c.ConnectedUrl())
 		}),
 	}
 
