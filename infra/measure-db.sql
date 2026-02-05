@@ -35,9 +35,11 @@ CREATE TABLE IF NOT EXISTS telemetry_envelopes (
     key_id           TEXT NOT NULL,
     nonce            TEXT NOT NULL,
     ciphertext       TEXT NOT NULL
+
+    PRIMARY KEY (time, tenant_id, gateway_id, nonce)
 );
 
-SELECT create_hypertable('telemetry_envelopes', 'time', if_not_exists => TRUE);
+SELECT create_hypertable('telemetry_envelopes', 'time', if_not_exists => TRUE, migrate_data => TRUE);
 
 CREATE INDEX IF NOT EXISTS idx_tenant_time ON telemetry_envelopes (tenant_id, time DESC);
 CREATE INDEX IF NOT EXISTS idx_gateway_time ON telemetry_envelopes (gateway_id, time DESC);
