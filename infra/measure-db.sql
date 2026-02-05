@@ -6,12 +6,12 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 -- ============================================
 
 CREATE TABLE IF NOT EXISTS tenants (
-    id               UUID PRIMARY KEY DEFAULT uuidv4(),
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name             TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS gateway (
-    id              UUID PRIMARY KEY DEFAULT uuidv4()
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid()
 );
 
 CREATE TABLE IF NOT EXISTS tenants_gateways (
@@ -29,12 +29,12 @@ CREATE TABLE IF NOT EXISTS tenants_gateways (
 
 CREATE TABLE IF NOT EXISTS telemetry_envelopes (
     time             TIMESTAMPTZ NOT NULL,
-    tenant_id        UUID NOT NULL DEFAULT uuidv4(),
-    gateway_id       UUID NOT NULL DEFAULT uuidv4(),
+    tenant_id        UUID NOT NULL,
+    gateway_id       UUID NOT NULL,
     version          INTEGER NOT NULL DEFAULT 1,
     key_id           TEXT NOT NULL,
     nonce            TEXT NOT NULL,
-    ciphertext       TEXT NOT NULL
+    ciphertext       TEXT NOT NULL,
 
     PRIMARY KEY (time, tenant_id, gateway_id, nonce)
 );

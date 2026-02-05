@@ -6,7 +6,7 @@ import (
 
 type Config struct {
 	NATSURL string `envconfig:"NATS_URL" default:"tls://nats:4222"`
-	DBURL   string `enconfig:"DB_URL" default:"postgres://poc:poc_password@timescaledb:5432/measures"`
+	DBURL   string `envconfig:"DB_URL" default:"postgres://poc:poc_password@timescaledb:5432/measures"`
 
 	TLSCACert     string `envconfig:"TLS_CA_CERT" default:"certs/ca.crt"`
 	TLSClientCert string `envconfig:"TLS_CLIENT_CERT" default:"certs/client.crt"`

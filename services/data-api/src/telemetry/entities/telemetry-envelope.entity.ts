@@ -5,10 +5,10 @@ export class TelemetryEnvelope {
     @PrimaryColumn({ type: 'timestamptz'})
     time: Date;
 
-    @Column({ type: 'uuid', name: 'tenant_id'})
+    @PrimaryColumn({ type: 'uuid', name: 'tenant_id'})
     tenantId: string;
 
-    @Column({ type: 'uuid', name: 'gateway_id'})
+    @PrimaryColumn({ type: 'uuid', name: 'gateway_id'})
     gatewayId: string;
 
     @PrimaryColumn({ type: 'text' })
