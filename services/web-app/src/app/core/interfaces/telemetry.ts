@@ -15,6 +15,6 @@ export interface DecryptedTelemetry {
     device_id: string;
     tenant_id: string;
     device_type: string;
-    time: string;
-    measurements: { [key: string]: number | boolean }
+    timestamp: string;
+    measurement: { [key: string]: number | boolean }
 }

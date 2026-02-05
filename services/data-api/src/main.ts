@@ -12,7 +12,6 @@ async function bootstrap() {
     allowedHeaders: 'Content-Type, Accept, Authorization, X-Tenant-Id, x-tenant-id',
   });
 
-  // Versioning the apis
   app.setGlobalPrefix('api'); 
   app.enableVersioning({
     type: VersioningType.URI,

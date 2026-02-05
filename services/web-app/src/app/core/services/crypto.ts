@@ -6,10 +6,11 @@ import { Injectable } from '@angular/core';
 export class CryptoService {
   private readonly HEX_KEY = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
   private cryptoKey: CryptoKey | null = null;
+  private keyInitialized: Promise<void>;
 
-  constructor() { this.initKey(); }
+  constructor() { this.keyInitialized = this.initKey(); }
 
-  private async initKey() {
+  private async initKey(): Promise<void> {
     const keyBytes = this.hexToBytes(this.HEX_KEY);
     this. cryptoKey = await window.crypto.subtle.importKey(
       'raw',
@@ -21,7 +22,8 @@ export class CryptoService {
   }
   
   async decryptPayload( nonceBase64: string, ciphertextBase64: string ): Promise<string> {
-    if (!this.cryptoKey) await this.initKey();
+    await this.keyInitialized;
+    
     try {
       const iv = this.base64ToBytes(nonceBase64);
       const data = this.base64ToBytes(ciphertextBase64);
