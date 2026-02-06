@@ -15,8 +15,8 @@ type Telemetry struct {
 	GatewayID  string    `json:"gateway_id"`
 	Version    int       `json:"version"`
 	KeyID      string    `json:"key_id"`
-	Nonce      string    `json:"nonce"`
-	Ciphertext string    `json:"ciphertext"`
+	Nonce      []byte    `json:"nonce"`
+	Ciphertext []byte    `json:"ciphertext"`
 }
 
 func InitDatabase(ctx context.Context, url string) *pgxpool.Pool {
@@ -85,6 +85,8 @@ func (bw *BatchWriter) flush(ctx context.Context, buf *[]Telemetry) {
 			offset+1, offset+2, offset+3, offset+4, offset+5, offset+6, offset+7)
 		args = append(args, t.Time, t.TenantID, t.GatewayID, t.Version, t.KeyID, t.Nonce, t.Ciphertext)
 	}
+
+	query += " ON CONFLICT ON CONSTRAINT uq_telemetry_dedup DO NOTHING"
 
 	_, err := bw.db.Exec(ctx, query, args...)
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"time"
 
 	"gateway-simulator/crypto"
@@ -43,17 +44,15 @@ func NewGateway(id, tenantID string, numDevices int, client *transport.Client, e
 }
 
 func (g *Gateway) Run(ctx context.Context, interval time.Duration) {
-	ticker := time.NewTicker(interval)
-	defer ticker.Stop()
-
 	log.Printf("[Gateway %s] Started with %d devices (tenant: %s)", g.ID, len(g.devices), g.TenantID)
 
 	for {
+		jitter := time.Duration(float32(interval) * (0.85 + rand.Float32()*0.30))
 		select {
 		case <-ctx.Done():
 			log.Printf("[Gateway %s] Shutting down", g.ID)
 			return
-		case <-ticker.C:
+		case <-time.After(jitter):
 			g.publishTelemetry()
 		}
 	}
@@ -61,6 +60,10 @@ func (g *Gateway) Run(ctx context.Context, interval time.Duration) {
 
 func (g *Gateway) publishTelemetry() {
 	for _, dev := range g.devices {
+		// randomness in publishing telemetries
+		if rand.Float32() < 0.03 {
+			continue
+		}
 		payload := dev.GenerateTelemetry()
 
 		encrypted, err := g.encryptPayload(payload)
