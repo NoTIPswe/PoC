@@ -28,18 +28,23 @@ CREATE TABLE IF NOT EXISTS tenants_gateways (
 -- ============================================
 
 CREATE TABLE IF NOT EXISTS telemetry_envelopes (
+    id               BIGINT GENERATED ALWAYS AS IDENTITY,
     time             TIMESTAMPTZ NOT NULL,
     tenant_id        UUID NOT NULL,
     gateway_id       UUID NOT NULL,
     version          INTEGER NOT NULL DEFAULT 1,
     key_id           TEXT NOT NULL,
-    nonce            TEXT NOT NULL,
-    ciphertext       TEXT NOT NULL,
+    nonce            BYTEA NOT NULL,
+    ciphertext       BYTEA NOT NULL,
 
-    PRIMARY KEY (time, tenant_id, gateway_id, nonce)
+    PRIMARY KEY (time, id),
+    CONSTRAINT uq_telemetry_dedup UNIQUE (time, gateway_id, nonce)
 );
 
-SELECT create_hypertable('telemetry_envelopes', 'time', if_not_exists => TRUE, migrate_data => TRUE);
+SELECT create_hypertable('telemetry_envelopes', 'time', 
+    if_not_exists => TRUE, 
+    migrate_data => TRUE
+);
 
 CREATE INDEX IF NOT EXISTS idx_tenant_time ON telemetry_envelopes (tenant_id, time DESC);
 CREATE INDEX IF NOT EXISTS idx_gateway_time ON telemetry_envelopes (gateway_id, time DESC);
