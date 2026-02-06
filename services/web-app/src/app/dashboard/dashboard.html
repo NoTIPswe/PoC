@@ -1,0 +1,60 @@
+<div class="container">
+  
+  <div class="login-card" *ngIf="!isLoggedIn">
+    <h1>Tenant Login</h1>
+    <p>Simulate authentication to access secure telemetry.</p>
+    
+    <div class="form-group">
+      <input 
+        type="text" 
+        [(ngModel)]="tenantIdInput" 
+        placeholder="Enter Tenant ID"
+        (keyup.enter)="login()">
+    </div>
+    
+    <button (click)="login()" [disabled]="!tenantIdInput">Access Dashboard</button>
+    <div class="hint">Try: <b>605e76a6-9812-4632-8418-43d99d9403d1</b> or <b>a66b9370-13f8-43e3-b097-f58c704f0f62</b></div>
+  </div>
+
+  <div class="dashboard-view" *ngIf="isLoggedIn">
+    <header>
+      <div class="header-content">
+        <div>
+          <h1>Dashboard: {{ currentTenant }}</h1>
+          <p>End-to-End Encrypted Data Stream ({{ telemetryData.length }} records)</p>
+        </div>
+        <button class="logout-btn" (click)="logout()">Logout</button>
+      </div>
+    </header>
+
+
+    <div class="loading" *ngIf="isLoading">Fetching data...</div>
+
+
+    <table *ngIf="!isLoading && telemetryData.length > 0">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Gateway</th>
+          <th>Device</th>
+          <th>Device Type</th>
+          <th>Decrypted Measurements</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of telemetryData">
+          <td>{{ item.timestamp | date:'medium' }}</td>
+          <td>{{ item.gateway_id }}</td>
+          <td>{{ item.device_id }}</td>
+          <td>{{ item.device_type }}</td>
+          <td class="measurements">{{ formatMeasurements(item.measurement) }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="empty-state" *ngIf="!isLoading && telemetryData.length === 0">
+      No telemetry found for {{ currentTenant }}.
+    </div>
+  </div>
+
+</div>

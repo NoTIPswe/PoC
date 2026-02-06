@@ -1,0 +1,148 @@
+services:
+  cert-gen: 
+    image: alpine:latest
+    container_name: poc-cert-gen
+    volumes:
+      - ./certs:/certs
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        apk add --no-cache openssl
+        mkdir -p /certs
+        
+        openssl req -new -x509 -days 365 -nodes -out /certs/ca.crt -keyout /certs/ca.key -subj "/CN=PoC-CA"
+
+        cat > /certs/server.ext << EOF
+        subjectAltName = DNS:nats,DNS:localhost,DNS:poc-nats,IP:127.0.0.1
+        EOF
+        openssl req -new -nodes -out /certs/server.csr -keyout /certs/server.key -subj "/CN=nats"
+        openssl x509 -req -in /certs/server.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/server.crt -days 365 -extfile /certs/server.ext
+
+        openssl req -new -nodes -out /certs/client.csr -keyout /certs/client.key -subj "/CN=gateway-sim"
+        openssl x509 -req -in /certs/client.csr -CA /certs/ca.crt -CAkey /certs/ca.key -CAcreateserial -out /certs/client.crt -days 365
+        chown -R 1000:1000 /certs
+
+  nats:
+    image: nats:2.10-alpine
+    container_name: poc-nats
+    depends_on: 
+      cert-gen:
+        condition: service_completed_successfully
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    volumes:
+      - nats_data:/data
+      - ./nats.conf:/etc/nats/nats.conf:ro
+      - ./certs:/etc/nats/certs:ro
+    command: ["-c", "/etc/nats/nats.conf"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  gateway-simulator:
+    build: ../services/gateway-simulator
+    container_name: poc-gateway-simulator
+    depends_on:
+      cert-gen:
+        condition: service_completed_successfully
+      nats:
+        condition: service_healthy
+    volumes:
+      - ./certs:/app/certs:ro
+    environment:
+      - NATS_URL=tls://nats:4222 
+      - TLS_CA_CERT=/app/certs/ca.crt
+      - TLS_CLIENT_CERT=/app/certs/client.crt
+      - TLS_CLIENT_KEY=/app/certs/client.key
+      - NUM_GATEWAYS=2
+      - DEVICES_PER_GATEWAY=5
+      - TELEMETRY_INTERVAL=5s
+      - LOG_LEVEL=info
+
+  data-api:
+    build:
+      context: ..
+      dockerfile: services/data-api/Dockerfile
+    container_name: poc-data-api 
+    depends_on: 
+      timescaledb: 
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DB_HOST=timescaledb
+      - DB_PORT=5432
+      - DB_USERNAME=${POSTGRES_USER:-poc}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-poc_password}
+      - DB_DATABASE=${POSTGRES_DB:-measures}
+
+  timescaledb: 
+    image: timescale/timescaledb:latest-pg18
+    container_name: poc-timescaledb
+    depends_on: 
+      cert-gen:
+        condition: service_completed_successfully
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-poc}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-poc_password}
+      POSTGRES_DB: ${POSTGRES_DB:-measures}
+    volumes:
+      - timescaledb_data:/var/lib/postgresql/data
+      - ./measure-db.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro 
+    command: 
+      - "postgres"
+      - "-c"
+      - "shared_buffers=64MB"
+      - "-c"
+      - "work_mem=4MB"
+      - "-c"
+      - "maintenance_work_mem=32MB"
+      - "-c"
+      - "max_connections=50"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-poc} -d ${POSTGRES_DB:-measures}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5  
+
+
+  data-consumer:
+    build: ../services/data-consumer
+    container_name: poc-data-consumer
+    depends_on:
+      cert-gen:
+        condition: service_completed_successfully
+      nats:
+        condition: service_healthy
+      timescaledb: 
+        condition: service_healthy
+    volumes:
+      - ./certs:/app/certs:ro
+    environment:
+      - NATS_URL=tls://nats:4222 
+      - TLS_CA_CERT=/app/certs/ca.crt
+      - TLS_CLIENT_CERT=/app/certs/client.crt
+      - TLS_CLIENT_KEY=/app/certs/client.key
+      - DB_URL=postgres://poc:poc_password@timescaledb:5432/measures
+      - LOG_LEVEL=info
+
+  web-app:
+    build: ../services/web-app
+    container_name: poc-web-app
+    ports:
+      - "4200:80"
+    depends_on:
+      - data-api
+
+volumes: 
+  timescaledb_data:
+  nats_data:
+  

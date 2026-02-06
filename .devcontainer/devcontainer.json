@@ -1,0 +1,36 @@
+{
+  "name": "IoT PoC M31",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.go",
+        "angular.ng-template",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "go.gopath": "/home/vscode/go"
+      }
+    }
+  },
+  
+  "workspaceFolder": "/workspaces/PoC",
+  
+  "forwardPorts": [ 3000, 4200, 5432, 4222 ],
+  "portsAttributes": {
+    "3000": { "label": "Data API (NestJS)" },
+    "4200": { "label": "Web application (Angular)" },
+    "5432": { "label": "PostgreSQL/TimescaleDB" },
+    "4222": { "label": "NATS" }
+  },
+  "postCreateCommand": "pnpm install || true", 
+  "remoteUser": "vscode"
+}
