@@ -11,11 +11,11 @@ async function bootstrap() {
     allowedHeaders: 'Content-Type, Accept, X-Tenant-Id',
   });
 
-  app.setGlobalPrefix('api'); 
+  app.setGlobalPrefix('api');
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: '1',
-  })
+  });
 
   await app.listen(process.env.PORT ?? 3000);
 }

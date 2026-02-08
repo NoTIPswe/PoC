@@ -7,7 +7,7 @@ import { EncryptedEnvelope } from '../interfaces/telemetry';
   providedIn: 'root',
 })
 export class TelemetryService {
-  private apiUrl = '/api/v1/telemetry'; 
+  private apiUrl = '/api/v1/telemetry';
 
   constructor(private http: HttpClient) {}
 

@@ -8,7 +8,9 @@ export class CryptoService {
   private cryptoKey: CryptoKey | null = null;
   private keyInitialized: Promise<void>;
 
-  constructor() { this.keyInitialized = this.initKey(); }
+  constructor() {
+    this.keyInitialized = this.initKey();
+  }
 
   private async initKey(): Promise<void> {
     const keyBytes = this.hexToBytes(this.HEX_KEY);
@@ -17,23 +19,23 @@ export class CryptoService {
       keyBytes as any,
       { name: 'AES-GCM' },
       false,
-      ['decrypt']
+      ['decrypt'],
     );
   }
-  
-  async decryptPayload( nonceBase64: string, ciphertextBase64: string ): Promise<string> {
+
+  async decryptPayload(nonceBase64: string, ciphertextBase64: string): Promise<string> {
     await this.keyInitialized;
-    
+
     try {
       const iv = this.base64ToBytes(nonceBase64);
       const data = this.base64ToBytes(ciphertextBase64);
 
       const decryptedBuffer = await window.crypto.subtle.decrypt(
-        { name: 'AES-GCM', iv: iv as any}, 
-        this.cryptoKey!, 
-        data as any
+        { name: 'AES-GCM', iv: iv as any },
+        this.cryptoKey!,
+        data as any,
       );
-      
+
       return new TextDecoder().decode(decryptedBuffer);
     } catch (error) {
       console.error('Decryption failed:', error);
