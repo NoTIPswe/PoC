@@ -34,7 +34,7 @@ services:
       - "8222:8222"
     volumes:
       - nats_data:/data
-      - ./nats.conf:/etc/nats/nats.conf:ro
+      - ./nats/nats.conf:/etc/nats/nats.conf:ro
       - ./certs:/etc/nats/certs:ro
     command: ["-c", "/etc/nats/nats.conf"]
     healthcheck:
@@ -142,7 +142,57 @@ services:
     depends_on:
       - data-api
 
+  # Monitoring Stack
+  nats-exporter:
+    image: natsio/prometheus-nats-exporter:latest
+    container_name: poc-nats-exporter
+    depends_on:
+      nats:
+        condition: service_healthy
+    ports:
+      - "7777:7777"
+    command:
+      - "-varz"
+      - "-connz"
+      - "-subz"
+      - "-jsz=all"
+      - "http://nats:8222"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: poc-prometheus
+    depends_on:
+      - nats-exporter
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: poc-grafana
+    depends_on:
+      - prometheus
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+
 volumes: 
   timescaledb_data:
   nats_data:
+  prometheus_data:
+  grafana_data:
   

@@ -15,11 +15,11 @@ Vogliamo dimostrare che lo stack tecnologico scelto è un _good fit_ per i requi
 
 ### 2. Data Queue
 
-- **Tecnologia:** NATS JetStream (Modulo MQTT abilitato).
+- **Tecnologia:** NATS JetStream.
 - **Ruolo:**
-  Agisce come unico punto di ingresso e buffer ad alte prestazioni. Sostituisce l'Ingestion Service custom, accettando direttamente le connessioni MQTTS dai gateway e validandone l'identità tramite certificati statici. I messaggi validati vengono persistiti immediatamente nello stream JetStream per garantire la durabilità.
+  Agisce come unico punto di ingresso e buffer ad alte prestazioni. Sostituisce l'Ingestion Service custom, accettando direttamente le connessioni dai gateway e validandone l'identità tramite certificati statici. I messaggi validati vengono persistiti immediatamente nello stream JetStream per garantire la durabilità.
 - **Perché:**
-  Rimuove un hop architetturale superfluo, riducendo latenza e punti di fallimento. NATS gestisce nativamente la persistenza e il protocollo MQTT, garantendo che nessun dato venga perso se il database è sotto stress.
+  Rimuove un hop architetturale superfluo, riducendo latenza e punti di fallimento. NATS gestisce nativamente la persistenza, garantendo che nessun dato venga perso se il database è sotto stress.
 
 ### 3. Data Consumer
 
@@ -31,10 +31,10 @@ Vogliamo dimostrare che lo stack tecnologico scelto è un _good fit_ per i requi
 
 ### 4. Measures Database
 
-**Tecnologia:** PostgreSQL + TimescaleDB
-**Ruolo:**
+- **Tecnologia:** PostgreSQL + TimescaleDB
+- **Ruolo:**
 Storage persistente delle serie temporali. I dati verranno salvati in **Hypertables** partizionate, includendo una colonna `tenant_id` per garantire la segregazione logica dei dati fin dal livello di storage.
-**Perché:**
+- **Perché:**
 TimescaleDB offre le performance di un TSDB verticale mantenendo l'affidabilità e l'ecosistema SQL di PostgreSQL.
 
 ### 5. Data API
@@ -65,7 +65,7 @@ Per motivi di tempo e focalizzazione, il PoC esclude le parti non critiche per l
 - **API Esterne:** Non esporremo API per integratori terzi.
 - **Segregazione multi-tenant "hard":** Useremo una segregazione logica (colonna nel DB), riservandoci di valutare schemi più complessi (es. RLS o schema-per-tenant) per l'MVP finale.
 - **Testing & Code Quality:** Il codice sarà funzionale alla dimostrazione ("quick & dirty"), senza copertura di test estensiva.
-- **Observability:** Non implementeremo stack di monitoraggio (Prometheus/Grafana) o logging centralizzato per auditing.
+- **Observability Avanzata:** È presente un setup base di Prometheus + Grafana per il monitoraggio di NATS, ma non sono implementati alerting, logging centralizzato o tracing distribuito.
 - **Flusso Bidirezionale:** Il sistema gestirà solo l'ingestion (Gateway -> Cloud), escludendo l'invio di comandi ai dispositivi.
 
 ---
@@ -76,7 +76,7 @@ Per motivi di tempo e focalizzazione, il PoC esclude le parti non critiche per l
 
 - **Docker Desktop** installato e avviato sulla macchina
   - [Download Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- Porte libere: `4200` (Dashboard), `3000` (API), `5432` (Database), `4222` (NATS)
+- Porte libere: `4200` (Dashboard), `3000` (API), `3001` (Grafana), `9090` (Prometheus), `5432` (Database), `4222` (NATS)
 
 ## Esecuzione
 
@@ -132,6 +132,29 @@ Dopo il login, dovresti vedere:
 - Una tabella con dati di telemetria cifrati e decifrati lato client
 - Dati in arrivo ogni 5 secondi da diversi dispositivi IoT simulati
 - Tipi di sensori: temperature, humidity, power meter, air quality, motion sensor
+
+## Monitoring Stack (Prometheus + Grafana)
+
+Il PoC include un setup di monitoraggio per NATS basato su Prometheus e Grafana.
+
+### Accesso alle interfacce
+
+- **Grafana**: http://localhost:3001
+  - Username: `admin`
+  - Password: `admin`
+- **Prometheus**: http://localhost:9090
+- **NATS Exporter Metrics**: http://localhost:7777/metrics
+
+### Dashboard NATS
+
+Una dashboard pre-configurata "NATS Server Monitoring" è automaticamente disponibile in Grafana con le seguenti metriche:
+
+- **Message Rate**: Messaggi in entrata/uscita al secondo
+- **Throughput**: Bytes in entrata/uscita al secondo
+- **Active Connections**: Connessioni attive al server NATS
+- **Subscriptions**: Numero di sottoscrizioni attive
+- **Server Memory/CPU**: Utilizzo risorse del server NATS
+- **Slow Consumers**: Contatore di consumer lenti
 
 ## Troubleshooting
 
